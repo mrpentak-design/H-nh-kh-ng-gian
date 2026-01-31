@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mô phỏng hình học không gian THPT</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Toán THPT • Hình học không gian</p>
+      <h1>Mô phỏng hình học không gian trực quan</h1>
+      <p class="subtitle">
+        Khám phá các hình cơ bản trong chương trình học, xem mô hình gợi ý, và
+        nhập đề bài để nhận hình minh họa phù hợp.
+      </p>
+      <div class="hero-actions">
+        <button class="primary" id="view-shapes">Xem thư viện hình</button>
+        <button class="secondary" id="focus-input">Nhập đề bài</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <h2>Hướng dẫn nhanh</h2>
+      <ol>
+        <li>Chọn một hình trong thư viện bên dưới.</li>
+        <li>Hoặc nhập đề bài, hệ thống sẽ gợi ý hình phù hợp.</li>
+        <li>Tùy chỉnh nhãn điểm, cạnh, mặt trong phần chi tiết.</li>
+      </ol>
+    </div>
+  </header>
+
+  <main>
+    <section class="library" id="library">
+      <div class="section-header">
+        <h2>Thư viện hình cơ bản</h2>
+        <p>Các hình được yêu cầu nhiều trong chương trình toán THPT.</p>
+      </div>
+      <div class="shape-grid" id="shape-grid"></div>
+    </section>
+
+    <section class="builder" id="builder">
+      <div class="section-header">
+        <h2>Hỗ trợ vẽ hình từ đề bài</h2>
+        <p>Nhập mô tả để hệ thống gợi ý hình phù hợp và phác thảo.</p>
+      </div>
+      <div class="builder-content">
+        <form id="prompt-form">
+          <label for="prompt">Nội dung đề bài</label>
+          <textarea
+            id="prompt"
+            name="prompt"
+            rows="6"
+            placeholder="Ví dụ: Cho hình chóp S.ABCD có đáy ABCD là hình vuông, SA vuông góc với đáy..."
+          ></textarea>
+          <button type="submit" class="primary">Gợi ý hình</button>
+          <p class="hint">
+            Gợi ý: nhập các từ khóa như “hình chóp”, “lăng trụ”, “hình cầu”, “hình nón”,
+            “hình trụ”, “lập phương”.
+          </p>
+        </form>
+        <div class="result">
+          <div class="result-header">
+            <h3 id="result-title">Chưa có hình được chọn</h3>
+            <span class="badge" id="result-badge">Chờ đề bài</span>
+          </div>
+          <div class="result-canvas" id="result-canvas"></div>
+          <div class="result-notes" id="result-notes"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Gợi ý hình học dựa trên từ khóa. Bạn có thể mở rộng bằng cách thêm mô hình
+      3D hoặc công cụ dựng hình chuyên sâu.
+    </p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
