@@ -103,8 +103,16 @@ const resultNotes = document.getElementById("result-notes");
 const promptForm = document.getElementById("prompt-form");
 const promptInput = document.getElementById("prompt");
 
+const aiForm = document.getElementById("ai-form");
+const aiPromptInput = document.getElementById("ai-prompt");
+const aiResultTitle = document.getElementById("ai-result-title");
+const aiResultBadge = document.getElementById("ai-result-badge");
+const aiResultCanvas = document.getElementById("ai-result-canvas");
+const aiResultNotes = document.getElementById("ai-result-notes");
+
 const viewShapesButton = document.getElementById("view-shapes");
 const focusInputButton = document.getElementById("focus-input");
+const focusAiButton = document.getElementById("focus-ai");
 
 const normalize = (text) => text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
 
@@ -125,6 +133,27 @@ const updateResult = (shape, modeLabel = "Từ khóa") => {
   resultBadge.textContent = modeLabel;
   resultCanvas.innerHTML = shape.svg;
   resultNotes.textContent = shape.notes;
+};
+
+const updateAiResult = ({ title, badge, svg, notes }) => {
+  aiResultTitle.textContent = title;
+  aiResultBadge.textContent = badge;
+  aiResultCanvas.innerHTML = svg ?? "";
+  aiResultNotes.textContent = notes;
+};
+
+const requestAIDrawing = async (prompt) => {
+  const response = await fetch("/api/ai-draw", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt }),
+  });
+
+  if (!response.ok) {
+    throw new Error("AI request failed");
+  }
+
+  return response.json();
 };
 
 const findShapeByPrompt = (prompt) => {
@@ -178,6 +207,63 @@ viewShapesButton.addEventListener("click", () => {
 focusInputButton.addEventListener("click", () => {
   promptInput.focus();
   document.getElementById("builder").scrollIntoView({ behavior: "smooth" });
+});
+
+focusAiButton.addEventListener("click", () => {
+  aiPromptInput.focus();
+  document.getElementById("ai").scrollIntoView({ behavior: "smooth" });
+});
+
+aiForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const prompt = aiPromptInput.value.trim();
+  if (!prompt) {
+    updateAiResult({
+      title: "Hãy nhập mô tả để AI xử lý",
+      badge: "Thiếu mô tả",
+      svg: "",
+      notes: "Bạn cần mô tả đề bài để hệ thống AI dựng hình minh họa.",
+    });
+    return;
+  }
+
+  updateAiResult({
+    title: "Đang dựng hình...",
+    badge: "Đang xử lý",
+    svg: "",
+    notes: "Hệ thống đang gửi yêu cầu đến mô hình AI.",
+  });
+
+  try {
+    const data = await requestAIDrawing(prompt);
+    updateAiResult({
+      title: data.title ?? "Phác thảo từ AI",
+      badge: "AI phản hồi",
+      svg: data.svg ?? "",
+      notes:
+        data.notes ??
+        "Kết quả do AI tạo. Bạn có thể chỉnh sửa nhãn điểm, cạnh và mặt phẳng.",
+    });
+  } catch (error) {
+    const fallbackShape = findShapeByPrompt(prompt);
+    if (fallbackShape) {
+      updateAiResult({
+        title: fallbackShape.name,
+        badge: "Demo AI",
+        svg: fallbackShape.svg,
+        notes:
+          "Hiện chưa kết nối API AI, hệ thống dùng hình minh họa có sẵn dựa trên từ khóa.",
+      });
+    } else {
+      updateAiResult({
+        title: "Chưa dựng được hình",
+        badge: "Chưa kết nối AI",
+        svg: "",
+        notes:
+          "Cần tích hợp backend `/api/ai-draw` để AI dựng hình. Hãy thêm từ khóa rõ hơn để thử lại.",
+      });
+    }
+  }
 });
 
 updateResult(shapes[0], "Gợi ý mặc định");

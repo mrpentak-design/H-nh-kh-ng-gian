@@ -18,6 +18,7 @@
       <div class="hero-actions">
         <button class="primary" id="view-shapes">Xem thư viện hình</button>
         <button class="secondary" id="focus-input">Nhập đề bài</button>
+        <button class="secondary" id="focus-ai">AI phác thảo</button>
       </div>
     </div>
     <div class="hero-card">
@@ -66,6 +67,39 @@
           </div>
           <div class="result-canvas" id="result-canvas"></div>
           <div class="result-notes" id="result-notes"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ai" id="ai">
+      <div class="section-header">
+        <h2>AI phác thảo hình theo đề bài</h2>
+        <p>
+          Tích hợp mô hình AI để tự động dựng hình minh họa. Bản mẫu hiện tại sẽ hiển thị
+          phác thảo mẫu và hướng dẫn kết nối API thật.
+        </p>
+      </div>
+      <div class="builder-content">
+        <form id="ai-form">
+          <label for="ai-prompt">Mô tả yêu cầu vẽ</label>
+          <textarea
+            id="ai-prompt"
+            name="ai-prompt"
+            rows="5"
+            placeholder="Ví dụ: Vẽ hình chóp S.ABCD, đáy ABCD là hình chữ nhật, SA vuông góc với đáy..."
+          ></textarea>
+          <button type="submit" class="primary">Tạo hình với AI</button>
+          <p class="hint">
+            Khi tích hợp backend, hệ thống sẽ gửi prompt đến dịch vụ AI để trả về SVG hoặc mô hình 3D.
+          </p>
+        </form>
+        <div class="result">
+          <div class="result-header">
+            <h3 id="ai-result-title">Chưa có hình AI</h3>
+            <span class="badge" id="ai-result-badge">Chờ yêu cầu</span>
+          </div>
+          <div class="result-canvas" id="ai-result-canvas"></div>
+          <div class="result-notes" id="ai-result-notes"></div>
         </div>
       </div>
     </section>
