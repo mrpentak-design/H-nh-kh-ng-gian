@@ -105,6 +105,8 @@ const promptInput = document.getElementById("prompt");
 
 const aiForm = document.getElementById("ai-form");
 const aiPromptInput = document.getElementById("ai-prompt");
+const aiEndpointInput = document.getElementById("ai-endpoint");
+const aiKeyInput = document.getElementById("ai-key");
 const aiResultTitle = document.getElementById("ai-result-title");
 const aiResultBadge = document.getElementById("ai-result-badge");
 const aiResultCanvas = document.getElementById("ai-result-canvas");
@@ -115,6 +117,9 @@ const focusInputButton = document.getElementById("focus-input");
 const focusAiButton = document.getElementById("focus-ai");
 
 const normalize = (text) => text.toLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu, "");
+
+const svgToDataUri = (svg) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(svg.trim())}`;
 
 const renderShapeCard = (shape) => {
   const card = document.createElement("article");
@@ -135,17 +140,39 @@ const updateResult = (shape, modeLabel = "Từ khóa") => {
   resultNotes.textContent = shape.notes;
 };
 
-const updateAiResult = ({ title, badge, svg, notes }) => {
+const renderAiVisual = ({ svg, imageUrl }) => {
+  if (imageUrl) {
+    aiResultCanvas.innerHTML = `<img src="${imageUrl}" alt="Hình AI" />`;
+    return;
+  }
+  if (svg) {
+    aiResultCanvas.innerHTML = svg;
+    return;
+  }
+  aiResultCanvas.innerHTML = "";
+};
+
+const updateAiResult = ({ title, badge, svg, imageUrl, notes }) => {
   aiResultTitle.textContent = title;
   aiResultBadge.textContent = badge;
-  aiResultCanvas.innerHTML = svg ?? "";
+  renderAiVisual({ svg, imageUrl });
   aiResultNotes.textContent = notes;
 };
 
 const requestAIDrawing = async (prompt) => {
-  const response = await fetch("/api/ai-draw", {
+  const endpoint = aiEndpointInput.value.trim();
+  if (!endpoint) {
+    throw new Error("Missing AI endpoint");
+  }
+
+  const headers = { "Content-Type": "application/json" };
+  if (aiKeyInput.value.trim()) {
+    headers.Authorization = `Bearer ${aiKeyInput.value.trim()}`;
+  }
+
+  const response = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify({ prompt }),
   });
 
@@ -155,6 +182,23 @@ const requestAIDrawing = async (prompt) => {
 
   return response.json();
 };
+
+const galleryGrid = document.getElementById("gallery-grid");
+const galleryItems = shapes.map((shape) => ({
+  id: shape.id,
+  name: shape.name,
+  imageUrl: svgToDataUri(shape.svg),
+}));
+
+galleryItems.forEach((item) => {
+  const card = document.createElement("article");
+  card.className = "gallery-card";
+  card.innerHTML = `
+    <img src="${item.imageUrl}" alt="${item.name}" />
+    <strong>${item.name}</strong>
+  `;
+  galleryGrid.appendChild(card);
+});
 
 const findShapeByPrompt = (prompt) => {
   const normalizedPrompt = normalize(prompt);
@@ -236,10 +280,14 @@ aiForm.addEventListener("submit", async (event) => {
 
   try {
     const data = await requestAIDrawing(prompt);
+    const imageUrl =
+      data.imageUrl ??
+      (data.imageBase64 ? `data:image/png;base64,${data.imageBase64}` : null);
     updateAiResult({
       title: data.title ?? "Phác thảo từ AI",
       badge: "AI phản hồi",
       svg: data.svg ?? "",
+      imageUrl,
       notes:
         data.notes ??
         "Kết quả do AI tạo. Bạn có thể chỉnh sửa nhãn điểm, cạnh và mặt phẳng.",
@@ -260,7 +308,7 @@ aiForm.addEventListener("submit", async (event) => {
         badge: "Chưa kết nối AI",
         svg: "",
         notes:
-          "Cần tích hợp backend `/api/ai-draw` để AI dựng hình. Hãy thêm từ khóa rõ hơn để thử lại.",
+          "Hãy nhập địa chỉ API AI và thử lại, hoặc thêm từ khóa rõ hơn để dùng bản demo.",
       });
     }
   }

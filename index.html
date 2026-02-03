@@ -40,6 +40,14 @@
       <div class="shape-grid" id="shape-grid"></div>
     </section>
 
+    <section class="gallery" id="gallery">
+      <div class="section-header">
+        <h2>Kho hình minh hoạ nhanh</h2>
+        <p>Bộ hình minh họa sẵn có giúp học sinh quan sát nhanh các khối cơ bản.</p>
+      </div>
+      <div class="gallery-grid" id="gallery-grid"></div>
+    </section>
+
     <section class="builder" id="builder">
       <div class="section-header">
         <h2>Hỗ trợ vẽ hình từ đề bài</h2>
@@ -81,6 +89,26 @@
       </div>
       <div class="builder-content">
         <form id="ai-form">
+          <div class="api-config">
+            <div>
+              <label for="ai-endpoint">Địa chỉ API AI</label>
+              <input
+                id="ai-endpoint"
+                name="ai-endpoint"
+                type="url"
+                placeholder="https://your-ai-service.example.com/generate"
+              />
+            </div>
+            <div>
+              <label for="ai-key">API Key (tuỳ chọn)</label>
+              <input
+                id="ai-key"
+                name="ai-key"
+                type="password"
+                placeholder="Nhập API key nếu cần"
+              />
+            </div>
+          </div>
           <label for="ai-prompt">Mô tả yêu cầu vẽ</label>
           <textarea
             id="ai-prompt"
@@ -90,7 +118,7 @@
           ></textarea>
           <button type="submit" class="primary">Tạo hình với AI</button>
           <p class="hint">
-            Khi tích hợp backend, hệ thống sẽ gửi prompt đến dịch vụ AI để trả về SVG hoặc mô hình 3D.
+            Khi tích hợp backend, hệ thống sẽ gửi prompt đến dịch vụ AI để trả về ảnh/SVG hoặc mô hình 3D.
           </p>
         </form>
         <div class="result">
